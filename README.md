@@ -1,65 +1,137 @@
 # 0xDSI-CET (C Engine + Spark Runtime)
 
-This repository contains a native C event-trend engine and a Databricks/Spark runtime wrapper that performs partitioned event-trend detection in streaming microbatches.
+0xDSI-CET is a native C implementation of Complete Event Trend Detection (CET) with a Python bridge and Databricks Structured Streaming runtime.
 
-## How the system works
+This repository operationalizes the core ideas from the CET literature in a production-oriented shape:
+- graph-based trend representation,
+- multiple execution modes (M-CET / T-CET / H-CET),
+- sliding-window + graphlet planning concepts,
+- runtime controls for reliability, observability, and deployment safety.
 
-### 1) Input model
-The runtime expects a Delta input table (`cet_events`) with event identifiers, partition keys, event types, and event-time columns. The Spark job validates required columns against `contracts/spark_input_schema_v1.json` before processing.
+---
 
-### 2) Native engine boundary
-The C engine exports a stable API in `c_engine/include/cet.h`.
-- Query parsing (`cet_parse_query`) converts sequence definitions into internal query structs.
-- Graph construction APIs (`cet_graph_add_vertex`, `cet_graph_add_edge`) build per-partition event DAGs.
-- Execution APIs (`cet_execute_mcet`, `cet_execute_tcet`, `cet_execute_hcet`) evaluate patterns over the graph.
-- Optimizer/window APIs support graphlet detection, planning, and overlapping-window primitives.
+## 1) End-to-end architecture
 
-A Python ctypes bridge (`bindings/python/bridge.py`) loads `liboxdsi_cet.so`, optionally verifies checksum integrity (`OXDSI_CET_SHA256`), marshals data into C structs, and calls execution entry points.
+### 1.1 Ingestion and contracts
+Input arrives in Delta table `cet_events` and is validated against `contracts/spark_input_schema_v1.json`.
+Required fields are expected to include event identity, partition key, event type, and event-time columns.
 
-### 3) Streaming execution lifecycle
-`notebooks/0xDSI_CET_Databricks.py` orchestrates runtime execution:
-1. Validate schema contract.
-2. Read streaming microbatch from `cet_events`.
-3. Process in distributed partition context (`mapPartitions`) to avoid driver `collect` bottlenecks.
-4. Build in-batch event graph per partition key.
-5. Execute H-CET via native bridge.
-6. Emit deterministic trend IDs (`query_version + partition_key + path`).
-7. Write complete trends with idempotent Delta `MERGE`.
-8. Write metrics and dead-letter diagnostics.
+### 1.2 Native execution boundary
+The C engine API (in `c_engine/include/cet.h`) provides:
+- query parsing (`cet_parse_query`),
+- graph building (`cet_graph_add_vertex`, `cet_graph_add_edge`),
+- execution (`cet_execute_mcet`, `cet_execute_tcet`, `cet_execute_hcet`),
+- optimizer/window helpers.
 
-### 4) Reliability model
-- Exactly-once-ish writes are achieved with deterministic IDs + Delta `MERGE`.
-- Dead-letter sink captures partition-level failures without stopping all partitions.
-- Checkpointed `foreachBatch` enables stream restart continuation.
-- Replay/recompute/retract scaffolds under `jobs/` support late-event correction workflows.
+The Python bridge (`bindings/python/bridge.py`) marshals Python tuples into C structs and calls native executors. Optional integrity check is enforced by `OXDSI_CET_SHA256`.
 
-### 5) Validation and quality gates
-- Native unit tests run through CTest.
-- Bridge integration smoke validates shared-library invocation.
-- Fault-injection test verifies checksum failure behavior.
-- Perf gate enforces benchmark thresholds from `contracts/perf_thresholds_v1.json`.
-- Golden/property tests validate deterministic behavior and semantics.
-- Short soak loop checks repeated stability.
+### 1.3 Streaming orchestration
+`notebooks/0xDSI_CET_Databricks.py` runs `foreachBatch`:
+1. validates schema contract,
+2. executes partition-side processing via `mapPartitions`,
+3. constructs partition-local event graphs,
+4. calls native H-CET,
+5. writes trends by deterministic `trend_id` using Delta `MERGE`,
+6. writes metrics + dead-letter diagnostics.
 
-## Repository map
-- `c_engine/`: native implementation and C tests
-- `bindings/python/`: ctypes bridge
-- `notebooks/`: Spark streaming runtime
-- `jobs/`: replay/recompute/retract/cache persistence scaffolds
-- `contracts/`: schema, perf, SLO, benchmark, and versioning contracts
-- `ci/`: local CI scripts used by workflow
-- `.github/workflows/ci.yml`: CI pipeline
-- `dashboards/`: metrics + alerting specs
-- `runbooks/`: operations + canary procedures
+### 1.4 Reliability controls
+- deterministic IDs (`query_version + partition + path`) for idempotent writes,
+- DLQ table for partition-level failures,
+- checkpointed stream for restart continuity,
+- replay/recompute/retract job scaffolds for late-event correction.
 
-## Build and test
+---
+
+## 2) Execution model details
+
+## 2.1 M-CET (memory-oriented)
+Depth-first traversal over adjacency index with sequence and `WITHIN` constraints.
+
+## 2.2 T-CET (time-oriented)
+Breadth-first frontier traversal with partial-cache touchpoints for reusable subpaths.
+
+## 2.3 H-CET (hybrid)
+BFS prefix seeding + DFS suffix expansion for mixed memory/latency behavior.
+
+## 2.4 Skip-till-any-match and Kleene
+The parser supports sequence tokens with Kleene-plus (e.g., `A+`), and traversal logic supports skip-till-any-match behavior for non-contiguous matching paths.
+
+---
+
+## 3) Paper-style pattern examples (implemented in this repo)
+
+The CET use-cases typically model fraud/security/market trends as event sequences in windows. This repo includes representative examples under `examples/scenarios.md` and notebook query usage.
+
+### 3.1 Check-kiting style trend
+`Deposit+, Withdrawal, Transfer` within time window and sliding interval.
+
+### 3.2 Stock trend pattern
+`Tick+, RallySignal` where repeated ticks represent monotonic trend phases.
+
+### 3.3 Security escalation pattern
+`AuthFail+, PrivEsc, DataAccess` (used in notebook runtime example).
+
+These are implemented as CET sequence queries through `parse_query(...)` and executed through H-CET in streaming microbatches.
+
+---
+
+## 4) CI / quality gates
+
+CI workflow runs:
+- native build + CTest,
+- integration smoke (Python bridge -> shared library),
+- checksum fault-injection path,
+- perf gate against threshold contract,
+- property semantics tests,
+- golden replay tests,
+- migration/version checks,
+- release checksum attestation,
+- short soak loop.
+
+Key scripts:
+- `ci/integration_smoke.sh`
+- `ci/fault_injection.sh`
+- `ci/perf_gate.sh`
+- `ci/migration_check.sh`
+- `ci/release_attestation.sh`
+- `ci/soak_test.sh`
+
+---
+
+## 5) Contracts and operations
+
+### 5.1 Contracts
+- `contracts/spark_input_schema_v1.json`
+- `contracts/cet_output_schema_v1.json`
+- `contracts/perf_thresholds_v1.json`
+- `contracts/slo_targets.json`
+- `contracts/query_version_policy_v1.json`
+- `contracts/benchmark_matrix_v1.json`
+
+### 5.2 Dashboards and alerts
+- `dashboards/metrics_spec.md`
+- `dashboards/alert_rules.yaml`
+- `dashboards/deploy_alerts.py`
+
+### 5.3 Replay and recompute jobs
+- `jobs/late_event_replay.py`
+- `jobs/recompute_trends.py`
+- `jobs/retract_and_upsert.sql`
+- `jobs/persist_partial_cache.py`
+- `jobs/calibrate_cost_model.py`
+
+---
+
+## 6) Build and run
+
 ```bash
 cmake -S . -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-## Extended checks
+Extended checks:
+
 ```bash
 ./ci/integration_smoke.sh
 ./ci/fault_injection.sh
@@ -68,8 +140,9 @@ PYTHONPATH=. python tests/golden_replay_test.py
 PYTHONPATH=. python tests/property_semantics_test.py
 ```
 
-## Deployment notes
-- Build `liboxdsi_cet.so` on cluster image/init.
-- Set `OXDSI_CET_SHA256` for runtime integrity checks.
-- Provision Delta tables referenced by notebook (`cet_events`, `cet_complete_trends`, `cet_metrics`, `cet_dead_letter`).
-- Configure replay/recompute jobs as Databricks workflows.
+---
+
+## 7) Current status
+
+This repository is production-oriented and includes substantial runtime/CI/ops scaffolding. 
+For full enterprise closure, continue with long-horizon benchmark publication, in-cluster integration stress tests, and fully automated replay correctness orchestration.
