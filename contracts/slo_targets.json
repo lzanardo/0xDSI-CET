@@ -1,0 +1,1 @@
+{"p95_batch_seconds":30,"p99_batch_seconds":60,"dead_letter_ratio_max":0.005,"replay_rto_minutes":15}

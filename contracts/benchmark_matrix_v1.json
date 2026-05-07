@@ -1,0 +1,1 @@
+{"workloads":[{"name":"w_small","events":10000},{"name":"w_medium","events":100000},{"name":"w_large","events":1000000}],"dimensions":["latency","memory","throughput"],"memory_budgets_mb":[256,512,1024]}

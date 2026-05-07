@@ -1,0 +1,8 @@
+{
+  "version": "v1",
+  "tables": {
+    "cet_complete_trends": ["trend_id:string", "batch_id:long", "partition_key:string", "path:array<long>", "created_at:timestamp"],
+    "cet_metrics": ["batch_id:long", "metric_name:string", "metric_value:double", "created_at:timestamp"],
+    "cet_dead_letter": ["batch_id:long", "partition_key:string", "error:string", "payload:string", "created_at:timestamp"]
+  }
+}

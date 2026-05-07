@@ -1,0 +1,1 @@
+{"trend_id_components":["query_version","partition_key","path"],"policy":"breaking query changes require version bump and full replay"}

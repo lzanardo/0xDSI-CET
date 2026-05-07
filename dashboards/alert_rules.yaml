@@ -1,0 +1,13 @@
+alerts:
+  - name: cet_p95_latency_breach
+    expr: cet_batch_latency_p95_seconds > 30
+    for: 10m
+    severity: page
+  - name: cet_dead_letter_ratio_breach
+    expr: cet_dead_letter_ratio > 0.005
+    for: 5m
+    severity: page
+  - name: cet_replay_backlog_breach
+    expr: cet_replay_backlog_count > 10000
+    for: 15m
+    severity: ticket
