@@ -1,0 +1,6 @@
+/workspaces/0xDSI-CET/build-sanitize/CMakeFiles/oxdsi_cet_static.dir
+/workspaces/0xDSI-CET/build-sanitize/CMakeFiles/oxdsi_cet.dir
+/workspaces/0xDSI-CET/build-sanitize/CMakeFiles/test_cet.dir
+/workspaces/0xDSI-CET/build-sanitize/CMakeFiles/test.dir
+/workspaces/0xDSI-CET/build-sanitize/CMakeFiles/edit_cache.dir
+/workspaces/0xDSI-CET/build-sanitize/CMakeFiles/rebuild_cache.dir

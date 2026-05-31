@@ -1,0 +1,27 @@
+{
+  "version": "v1",
+  "tables": {
+    "cet_entities_v5": [
+      "entity_id:string",
+      "entity_type:string",
+      "entity_key:string",
+      "first_seen_ms:long",
+      "last_seen_ms:long",
+      "attributes:string"
+    ],
+    "cet_entity_relations_v5": [
+      "src_entity_id:string",
+      "dst_entity_id:string",
+      "relation_type:string",
+      "event_id:long",
+      "event_time_ms:long"
+    ],
+    "cet_trend_evidence_v5": [
+      "trend_id:string",
+      "query_id:string",
+      "event_id:long",
+      "ordinal:int",
+      "risk_score:double"
+    ]
+  }
+}

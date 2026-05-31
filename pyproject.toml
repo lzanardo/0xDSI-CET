@@ -4,22 +4,29 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oxdsi-cet"
-version = "0.4.0"
-description = "0xDSI Complete Event Trend runtime: native C bridge, DSL, security graph builder, and Databricks production orchestration."
+version = "0.5.0"
+description = "0xDSI Complete Event Trend runtime: native C bridge, DSL, security graph builder, Databricks orchestration, temporal KG, and investigation APIs."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{name = "0xDSI"}]
-license = {text = "Proprietary or repository license"}
+license = {text = "Repository license pending; choose Apache-2.0, BSL, or proprietary before external production distribution."}
 dependencies = []
 
 [project.optional-dependencies]
 databricks = ["pyspark>=3.5"]
 yaml = ["PyYAML>=6"]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "build>=1.2"]
+supply-chain = ["cyclonedx-bom>=5"]
+
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["bindings*", "jobs*"]
+
+[tool.setuptools.package-data]
+"bindings.python" = ["native/*.so", "native/*.dylib", "native/*.dll"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

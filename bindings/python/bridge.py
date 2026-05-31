@@ -10,13 +10,10 @@ The bridge remains backward compatible with the original C API, while exposing:
 from __future__ import annotations
 
 import ctypes
-import hashlib
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-
-EXPECTED_SHA256 = os.getenv("OXDSI_CET_SHA256", "")
 
 CET_MAX_EVENTS = 200_000
 CET_MAX_EDGES = 1_000_000
@@ -26,12 +23,7 @@ CET_MAX_ERROR_LEN = 256
 CET_RUNTIME_CONFIG_VERSION = 1
 
 
-def _verify_lib(path: str) -> None:
-    if not EXPECTED_SHA256:
-        return
-    h = hashlib.sha256(Path(path).read_bytes()).hexdigest()
-    if h != EXPECTED_SHA256:
-        raise RuntimeError("Library checksum verification failed")
+from .native_loader import resolve_native_library, verify_native_library
 
 
 def _env_bool(name: str, default: bool = False) -> bool:
@@ -167,11 +159,10 @@ class CETMatch:
 
 class CETBridge:
     def __init__(self, lib_path: str | None = None):
-        if lib_path is None:
-            lib_path = str(Path(__file__).resolve().parents[2] / "build" / "liboxdsi_cet.so")
-        _verify_lib(lib_path)
-        self.lib_path = lib_path
-        self.lib = ctypes.CDLL(lib_path)
+        resolved = resolve_native_library(lib_path)
+        verify_native_library(resolved)
+        self.lib_path = resolved
+        self.lib = ctypes.CDLL(resolved)
         self.has_extended_exec = False
         self.has_parallel_exec = False
         self.has_runtime_defaults = False

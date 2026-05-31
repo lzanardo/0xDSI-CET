@@ -35,3 +35,7 @@ htmlcov/
 # Databricks bundle local state
 .databricks/
 .bundle/
+
+# release artifacts
+dist/
+# local patch packages

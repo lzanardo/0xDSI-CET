@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "0xDSI CET Attack Chain",
+  "type": "object",
+  "required": [
+    "chain_id",
+    "version",
+    "steps",
+    "within_ms"
+  ],
+  "properties": {
+    "chain_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event_type"
+        ]
+      }
+    },
+    "within_ms": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "slide_ms": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "relations": {
+      "type": "array"
+    },
+    "absence": {
+      "type": "array"
+    },
+    "mitre": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

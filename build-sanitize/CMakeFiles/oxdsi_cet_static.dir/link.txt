@@ -1,0 +1,2 @@
+/usr/bin/ar qc liboxdsi_cet_static.a CMakeFiles/oxdsi_cet_static.dir/c_engine/src/dsl.c.o CMakeFiles/oxdsi_cet_static.dir/c_engine/src/graph.c.o CMakeFiles/oxdsi_cet_static.dir/c_engine/src/algorithms.c.o CMakeFiles/oxdsi_cet_static.dir/c_engine/src/optimizer.c.o CMakeFiles/oxdsi_cet_static.dir/c_engine/src/sliding.c.o CMakeFiles/oxdsi_cet_static.dir/c_engine/src/runtime.c.o CMakeFiles/oxdsi_cet_static.dir/c_engine/src/parallel_hcet.c.o
+/usr/bin/ranlib liboxdsi_cet_static.a
