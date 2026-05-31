@@ -1,0 +1,57 @@
+{
+  "version": "v2",
+  "tables": {
+    "cet_complete_trends_v2": [
+      "trend_id:string",
+      "query_id:string",
+      "query_version:string",
+      "batch_id:long",
+      "partition_key:string",
+      "path:array<long>",
+      "trend_start_ms:long",
+      "trend_end_ms:long",
+      "event_count:int",
+      "score:double",
+      "severity:string",
+      "status:string",
+      "created_at:timestamp",
+      "updated_at:timestamp",
+      "retracted_at:timestamp",
+      "replay_id:string",
+      "engine_stats:string"
+    ],
+    "cet_metrics_v2": [
+      "stream_id:string",
+      "batch_id:long",
+      "query_id:string",
+      "query_version:string",
+      "partition_key:string",
+      "metric_name:string",
+      "metric_value:double",
+      "created_at:timestamp"
+    ],
+    "cet_dead_letter_v2": [
+      "dlq_id:string",
+      "stream_id:string",
+      "batch_id:long",
+      "query_id:string",
+      "query_version:string",
+      "partition_key:string",
+      "error:string",
+      "payload:string",
+      "created_at:timestamp"
+    ],
+    "cet_event_buffer": [
+      "query_id:string",
+      "query_version:string",
+      "partition_key:string",
+      "event_id:long",
+      "event_type:string",
+      "event_time_ms:long",
+      "event_time:timestamp",
+      "payload_json:string",
+      "expires_at:timestamp",
+      "updated_at:timestamp"
+    ]
+  }
+}

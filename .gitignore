@@ -1,0 +1,7 @@
+
+# local build/test artifacts
+build/
+__pycache__/
+*.pyc
+*.zip
+0xDSI-CET-native-runtime-v3-patch/

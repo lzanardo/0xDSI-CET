@@ -1,0 +1,25 @@
+{
+  "version": "v1",
+  "strategy": "event_buffer",
+  "rationale": "Retain per-query, per-partition events long enough to detect trends that cross Structured Streaming microbatch boundaries.",
+  "table": "cet_event_buffer",
+  "primary_key": [
+    "query_id",
+    "query_version",
+    "partition_key",
+    "event_id"
+  ],
+  "expiry": "event_time + within_ms + allowed_lateness_ms",
+  "columns": [
+    "query_id:string",
+    "query_version:string",
+    "partition_key:string",
+    "event_id:long",
+    "event_type:string",
+    "event_time_ms:long",
+    "event_time:timestamp",
+    "payload_json:string",
+    "expires_at:timestamp",
+    "updated_at:timestamp"
+  ]
+}

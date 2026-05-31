@@ -1,0 +1,17 @@
+{
+  "version": "v1",
+  "defaults": {
+    "native_threads": 1,
+    "enable_mmap_arena": false,
+    "mmap_workspace_bytes": 0,
+    "madvise_hugepage": false,
+    "deterministic_merge": true
+  },
+  "spark_conf": {
+    "oxdsi.cet.nativeThreads": "1",
+    "oxdsi.cet.enableMmapArena": "false",
+    "oxdsi.cet.mmapWorkspaceBytes": "0",
+    "oxdsi.cet.madviseHugepage": "false"
+  },
+  "policy": "Use native_threads=1 in streaming. Set native_threads>1 and enable_mmap_arena=true for offline recompute/backfill when executor oversubscription is controlled."
+}
