@@ -1,4 +1,4 @@
-.PHONY: build-native test-native test-python test-v4 test-v5 wheel sbom main-ready databricks-validate clean
+.PHONY: build-native test-native test-python test-v4 test-v5 test-v6 test-v7 test-all wheel sbom main-ready databricks-validate clean
 
 build-native:
 	cmake -S . -B build -DCET_ENABLE_PTHREADS=ON -DCET_ENABLE_MMAP_ARENA=ON
@@ -18,6 +18,15 @@ test-v4:
 test-v5:
 	./ci/v5_main_ready_regression.sh
 
+test-v6:
+	./ci/v6_sdp_zerobus_regression.sh
+
+test-v7:
+	./ci/v7_standing_runtime_regression.sh
+
+test-all:
+	./ci/all_in_one_v7_regression.sh
+
 wheel:
 	./scripts/build_wheel.sh
 
@@ -29,6 +38,7 @@ databricks-validate:
 
 main-ready:
 	./scripts/main_readiness_check.sh
+	./ci/v7_standing_runtime_regression.sh
 
 clean:
 	rm -rf build dist *.egg-info .pytest_cache

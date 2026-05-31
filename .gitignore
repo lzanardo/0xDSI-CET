@@ -39,3 +39,12 @@ htmlcov/
 # release artifacts
 dist/
 # local patch packages
+
+
+
+
+# editor/OS
+.DS_Store
+.vscode/
+.idea/
+

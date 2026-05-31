@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "event_types": ["positive_match", "cancel_match", "state_update"],
+  "required_columns": [
+    {"name": "event_type", "type": "string"},
+    {"name": "trend_id", "type": "string"},
+    {"name": "query_id", "type": "string"},
+    {"name": "query_version", "type": "string"},
+    {"name": "partition_key", "type": "string"},
+    {"name": "path", "type": "array<long>"},
+    {"name": "revision", "type": "long"},
+    {"name": "trend_json", "type": "string"},
+    {"name": "reason", "type": "string"},
+    {"name": "created_at", "type": "timestamp"}
+  ]
+}

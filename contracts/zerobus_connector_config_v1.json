@@ -1,0 +1,57 @@
+{
+  "version": "v1",
+  "description": "ZeroBus connector runtime configuration for 0xDSI-CET.",
+  "required": [
+    "transport",
+    "source_name",
+    "target_table"
+  ],
+  "properties": {
+    "transport": {
+      "enum": [
+        "file",
+        "http",
+        "mock"
+      ]
+    },
+    "source_name": {
+      "type": "string",
+      "default": "zerobus"
+    },
+    "target_table": {
+      "type": "string",
+      "default": "main.cet.cet_events"
+    },
+    "endpoint": {
+      "type": "string",
+      "required_for": [
+        "http"
+      ]
+    },
+    "token": {
+      "type": "string",
+      "secret": true
+    },
+    "file_path": {
+      "type": "string",
+      "required_for": [
+        "file"
+      ]
+    },
+    "batch_size": {
+      "type": "integer",
+      "default": 1000
+    },
+    "max_messages": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "default": null
+    },
+    "poll_interval_seconds": {
+      "type": "number",
+      "default": 1.0
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "v1",
+  "required_columns": [
+    {"name": "revision", "type": "long"},
+    {"name": "op", "type": "string"},
+    {"name": "event_id", "type": "long"},
+    {"name": "partition_key", "type": "string"},
+    {"name": "edge_json", "type": "string"},
+    {"name": "happened_at_ms", "type": "long"},
+    {"name": "created_at", "type": "timestamp"}
+  ]
+}
