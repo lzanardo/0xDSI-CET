@@ -1,0 +1,18 @@
+Start testing: May 31 18:22 UTC
+----------------------------------------------------------
+1/1 Testing: cet_tests
+1/1 Test: cet_tests
+Command: "/workspaces/0xDSI-CET/build-sanitize/test_cet"
+Directory: /workspaces/0xDSI-CET/build-sanitize
+"cet_tests" start time: May 31 18:22 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.20 sec
+----------------------------------------------------------
+Test Passed.
+"cet_tests" end time: May 31 18:22 UTC
+"cet_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 31 18:22 UTC

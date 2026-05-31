@@ -1,0 +1,16 @@
+{
+  "version": "v3",
+  "checkpoint_location": "dbfs:/checkpoints/0xdsi/cet/prod-v3",
+  "allowed_lateness_ms": 1800000,
+  "event_buffer_retention_multiplier": 2,
+  "default_switch_depth": 2,
+  "raise_on_engine_overflow": false,
+  "native_runtime": {
+    "native_threads": 1,
+    "enable_mmap_arena": false,
+    "mmap_workspace_bytes": 0,
+    "madvise_hugepage": false,
+    "deterministic_merge": true,
+    "databricks_default_threads_note": "Keep native_threads=1 in streaming executors to avoid Spark task oversubscription. Use >1 for offline replay/backfill only."
+  }
+}

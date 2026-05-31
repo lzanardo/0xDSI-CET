@@ -1,0 +1,49 @@
+name: CET Main-Ready CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, feature/cet-production-v4, feature/cet-main-ready-v5]
+
+jobs:
+  native-and-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - name: Native build/test
+        run: |
+          cmake -S . -B build -DCET_ENABLE_PTHREADS=ON -DCET_ENABLE_MMAP_ARENA=ON
+          cmake --build build
+          ctest --test-dir build --output-on-failure
+      - name: Production regression
+        run: ./ci/production_regression.sh
+      - name: V4 offline regression
+        run: ./ci/v4_offline_regression.sh
+      - name: V5 main-ready regression
+        run: ./ci/v5_main_ready_regression.sh
+      - name: Build wheel without native rebuild smoke
+        run: |
+          python -m pip install --upgrade pip build
+          OXDSI_SKIP_NATIVE_BUILD=1 python -m build --wheel
+      - name: Generate SBOM fallback
+        run: ./scripts/generate_sbom.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cet-main-ready-artifacts
+          path: |
+            dist/*.whl
+            dist/sbom*.json
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - name: Sanitizer smoke
+        run: ./ci/sanitizers.sh

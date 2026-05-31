@@ -1,0 +1,36 @@
+{
+  "version": "v1",
+  "required_columns": [
+    {
+      "name": "event_id",
+      "type": "long"
+    },
+    {
+      "name": "partition_key",
+      "type": "string"
+    },
+    {
+      "name": "event_type",
+      "type": "string"
+    },
+    {
+      "name": "event_time_ms",
+      "type": "long"
+    },
+    {
+      "name": "event_time",
+      "type": "timestamp"
+    }
+  ],
+  "recommended_attributes": [
+    "user_id",
+    "host_id",
+    "session_id",
+    "source_ip",
+    "cloud_account_id",
+    "process_id",
+    "parent_process_id",
+    "asset_id",
+    "asset_criticality"
+  ]
+}

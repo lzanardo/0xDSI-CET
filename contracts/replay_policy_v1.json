@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "policy": "late events trigger impacted partition/window materialization, recompute, anti-join retraction, and idempotent upsert",
+  "late_event_threshold_minutes": 5,
+  "default_allowed_lateness_ms": 1800000,
+  "retraction_status": "retracted",
+  "active_status": "active",
+  "trend_identity": [
+    "query_id",
+    "query_version",
+    "partition_key",
+    "path"
+  ]
+}

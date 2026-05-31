@@ -1,0 +1,35 @@
+resources:
+  jobs:
+    cet_v4_streaming_runtime:
+      name: 0xDSI CET v4 Streaming Runtime
+      tasks:
+        - task_key: cet_streaming
+          notebook_task:
+            notebook_path: ../notebooks/0xDSI_CET_Databricks_v4.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              source_table: ${var.source_table}
+              checkpoint_base: ${var.checkpoint_base}
+          libraries:
+            - whl: ${var.wheel_path}
+
+    cet_v4_replay_and_compaction:
+      name: 0xDSI CET v4 Replay and Compaction
+      tasks:
+        - task_key: late_event_replay
+          spark_python_task:
+            python_file: ../jobs/late_event_replay_prod.py
+            parameters: ["--catalog", "${var.catalog}", "--schema", "${var.schema}"]
+        - task_key: recompute
+          depends_on:
+            - task_key: late_event_replay
+          spark_python_task:
+            python_file: ../jobs/recompute_trends_prod.py
+            parameters: ["--catalog", "${var.catalog}", "--schema", "${var.schema}"]
+        - task_key: state_ttl
+          depends_on:
+            - task_key: recompute
+          spark_python_task:
+            python_file: ../jobs/state_ttl_prod.py
+            parameters: ["--catalog", "${var.catalog}", "--schema", "${var.schema}"]

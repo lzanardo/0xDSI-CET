@@ -1,0 +1,58 @@
+{
+  "version": "v4",
+  "queries": [
+    {
+      "query_id": "security_escalation",
+      "version": "v4.0.0",
+      "name": "Auth failure to privilege escalation and data access",
+      "enabled": true,
+      "pattern": "AuthFail+,PrivEsc,DataAccess",
+      "within_ms": 1800000,
+      "slide_ms": 300000,
+      "severity": "high",
+      "relations": [
+        {
+          "name": "same_user",
+          "field": "user_id",
+          "op": "same"
+        }
+      ],
+      "absence": [
+        {
+          "event_type": "MFAChallengeSuccess",
+          "within_ms": 1800000
+        }
+      ],
+      "score": {
+        "boost": 5
+      },
+      "tags": [
+        "identity",
+        "exfiltration"
+      ]
+    },
+    {
+      "query_id": "suspicious_process_to_network",
+      "version": "v4.0.0",
+      "enabled": true,
+      "pattern": "ProcessStart,(FileWrite|CredentialAccess)?,NetworkConnect",
+      "within_ms": 900000,
+      "slide_ms": 60000,
+      "severity": "medium",
+      "relations": [
+        {
+          "name": "same_host",
+          "field": "host_id",
+          "op": "same"
+        }
+      ],
+      "where": [
+        {
+          "field": "process_name",
+          "op": "regex",
+          "value": "(?i)(powershell|cmd|bash|python)"
+        }
+      ]
+    }
+  ]
+}

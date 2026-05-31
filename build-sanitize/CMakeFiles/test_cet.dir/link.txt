@@ -1,0 +1,1 @@
+/usr/bin/cc -fsanitize=address,undefined CMakeFiles/test_cet.dir/c_engine/tests/test_main.c.o -o test_cet  liboxdsi_cet_static.a 

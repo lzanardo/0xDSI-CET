@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "description": "CET v4 query DSL contract",
+  "query_fields": {
+    "query_id": "string, stable identifier",
+    "version": "string, semver or vN",
+    "pattern": "sequence pattern: A,A+,A?,A{m,n},(A|B)",
+    "within_ms": "integer",
+    "slide_ms": "integer",
+    "where": "array of field predicates",
+    "absence": "array of negative event specs",
+    "relations": "array of path relation constraints",
+    "severity": "info|low|medium|high|critical",
+    "enabled": "boolean"
+  },
+  "predicate_ops": [
+    "eq",
+    "ne",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "in",
+    "not_in",
+    "contains",
+    "regex",
+    "exists",
+    "not_exists"
+  ]
+}

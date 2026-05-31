@@ -1,0 +1,41 @@
+
+# local build/test artifacts
+build/
+__pycache__/
+*.pyc
+*.zip
+0xDSI-CET-native-runtime-v3-patch/
+
+# build and local artifacts
+build/
+cmake-build-*/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# local patch/application artifacts
+0xDSI-CET-*-patch/
+0xDSI-CET-*-patch.zip
+0xDSI-CET-*-patch.tar.gz
+*.patch.local
+
+# Databricks bundle local state
+.databricks/
+.bundle/
+
+# release artifacts
+dist/
+# local patch packages

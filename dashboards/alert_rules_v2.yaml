@@ -1,0 +1,21 @@
+alerts:
+  - name: cet_v2_batch_duration_breach
+    expr: batch_duration_seconds > 30
+    for: 10m
+    severity: page
+  - name: cet_v2_error_records_present
+    expr: error_records > 0
+    for: 5m
+    severity: ticket
+  - name: cet_v2_paths_truncated
+    expr: paths_truncated > 0
+    for: 1m
+    severity: page
+  - name: cet_v2_states_truncated
+    expr: states_truncated > 0
+    for: 1m
+    severity: page
+  - name: cet_v2_replay_backlog_breach
+    expr: cet_replay_backlog_count > 10000
+    for: 15m
+    severity: ticket

@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "table": "cet_queries",
+  "columns": [
+    "query_id:string",
+    "query_version:string",
+    "pattern_csv:string",
+    "within_ms:long",
+    "slide_ms:long",
+    "switch_depth:int",
+    "severity:string",
+    "score:double",
+    "enabled:boolean",
+    "owner:string",
+    "created_at:timestamp",
+    "updated_at:timestamp"
+  ],
+  "default_seed": {
+    "query_id": "security_escalation",
+    "query_version": "v1",
+    "pattern_csv": "AuthFail+,PrivEsc,DataAccess",
+    "within_ms": 1800000,
+    "slide_ms": 300000,
+    "switch_depth": 2,
+    "severity": "high",
+    "score": 1.0,
+    "enabled": true,
+    "owner": "0xDSI"
+  }
+}
