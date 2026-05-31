@@ -11,7 +11,7 @@
 ╚██████╔╝██╔╝ ██╗██████╔╝███████║██║      ╚██████╗███████╗   ██║   
  ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝       ╚═════╝╚══════╝   ╚═╝   
 
-     COMPLETE EVENT TREND ENGINE · STANDING TEMPORAL SECURITY INTELLIGENCE
+COMPLETE EVENT TREND ENGINE · STANDING TEMPORAL SECURITY INTELLIGENCE
 </pre>
 
 <p align="center">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <code>Native C Runtime</code> · <code>pthread</code> · <code>mmap</code> · <code>Databricks</code> · <code>Spark Declarative Pipelines</code> · <code>Delta Lake</code> · <code>ZeroBus</code> · <code>Standing Queries</code> · <code>Temporal KG</code>
+  <code>Native C Runtime</code> · <code>Posix Thread</code> · <code>MMAP()</code> · <code>Databricks</code> · <code>Spark Declarative Pipelines</code> · <code>Delta Lake</code> · <code>ZeroBus</code> · <code>Standing Queries</code> · <code>Temporal KG</code> · <code>int 21h hooks</code>
 </p>
 
 ---
@@ -45,8 +45,8 @@ Then it preserves the evidence, entities, graph path, risk explanation, replay l
 │                              0xDSI-CET MISSION                               │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│   Alert fragments are not enough.                                             │
-│   Security teams need complete, temporal, causal explanations.                │
+│   Alert fragments are not enough.                                            │
+│   Security teams need complete, temporal, causal explanations.               │
 │                                                                              │
 │   0xDSI-CET = events → graph → trend → evidence → replay → investigation     │
 │                                                                              │
@@ -58,13 +58,13 @@ Then it preserves the evidence, entities, graph path, risk explanation, replay l
 ## The Architecture
 
 <pre>
-                                  ┌────────────────────────────┐
-                                  │        TELEMETRY           │
-                                  │ SIEM · EDR · IAM · CLOUD   │
-                                  │ NET · DATA · APP · ZEROBUS │
-                                  └──────────────┬─────────────┘
-                                                 │
-                                                 ▼
+                     ┌────────────────────────────┐
+                     │        TELEMETRY           │
+                     │ SIEM · EDR · IAM · CLOUD   │
+                     │ NET · DATA · APP · ZEROBUS │
+                     └──────────────┬─────────────┘
+                                    │
+                                    ▼
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                       SPARK DECLARATIVE PIPELINES / SDP                      │
 │                                                                              │
@@ -265,12 +265,12 @@ The v7 runtime introduces mutable temporal graph state and standing trend querie
 
 <pre>
              ┌──────────────────────┐
- event ─────▶│ TemporalGraphState    │
+ event ─────▶│ TemporalGraphState   │
              └──────────┬───────────┘
                         │ mutation log
                         ▼
              ┌──────────────────────┐
-             │ StandingTrendRuntime  │
+             │ StandingTrendRuntime │
              └──────────┬───────────┘
                         │
           ┌─────────────┴─────────────┐
@@ -373,7 +373,7 @@ Deploy detection logic with evidence, not guesswork.
 
 <pre>
                        ┌────────────────────────────┐
-                       │       SECURITY-FIRST        │
+                       │       SECURITY-FIRST       │
                        └─────────────┬──────────────┘
                                      │
          ┌───────────────────────────┼───────────────────────────┐
@@ -585,11 +585,11 @@ Before declaring a specific deployment production-ready, validate:
 │                          TEMPORAL SECURITY INTELLIGENCE                      │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│  Events become graph state.                                                   │
-│  Graph state becomes trends.                                                  │
-│  Trends become evidence.                                                      │
-│  Evidence becomes investigation.                                               │
-│  Investigation becomes better detection.                                      │
+│  Events become graph state.                                                  │
+│  Graph state becomes trends.                                                 │
+│  Trends become evidence.                                                     │
+│  Evidence becomes investigation.                                             │
+│  Investigation becomes better detection.                                     │
 │                                                                              │
 └──────────────────────────────────────────────────────────────────────────────┘
 </pre>
