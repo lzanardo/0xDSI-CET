@@ -1,0 +1,40 @@
+resources:
+  pipelines:
+    cet_sdp_ingestion:
+      name: 0xDSI CET Spark Declarative Pipeline
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      libraries:
+        - notebook:
+            path: ../notebooks/0xDSI_CET_SDP.py
+      configuration:
+        oxdsi.cet.sdp.source_table: ${var.catalog}.${var.schema}.${var.source_table}
+        oxdsi.cet.sdp.query_registry_table: ${var.catalog}.${var.schema}.cet_query_registry_v4
+        oxdsi.cet.sdp.buffer_retention_days: "7"
+
+  jobs:
+    cet_zerobus_ingest:
+      name: 0xDSI CET ZeroBus Ingest
+      tasks:
+        - task_key: zerobus_to_delta
+          spark_python_task:
+            python_file: ../jobs/zerobus_to_delta_ingest_prod.py
+            parameters:
+              - --config-json
+              - '{"transport":"file","source_name":"zerobus","target_table":"${var.catalog}.${var.schema}.${var.source_table}"}'
+
+    cet_sdp_runtime_bridge:
+      name: 0xDSI CET SDP Runtime Bridge
+      tasks:
+        - task_key: expose_sdp_buffer
+          spark_python_task:
+            python_file: ../jobs/sdp_cet_runtime_bridge_prod.py
+            parameters:
+              - --catalog
+              - ${var.catalog}
+              - --schema
+              - ${var.schema}
+              - --sdp-buffer-table
+              - cet_sdp_event_buffer
+              - --runtime-source-view
+              - cet_events_from_sdp

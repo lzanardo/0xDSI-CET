@@ -1,0 +1,25 @@
+resources:
+  jobs:
+    cet_v7_standing_runtime:
+      name: 0xDSI CET v7 Standing Runtime
+      tasks:
+        - task_key: standing_runtime
+          notebook_task:
+            notebook_path: ../notebooks/0xDSI_CET_Standing_Runtime.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              source_table: cet_sdp_event_buffer
+              checkpoint_base: ${var.checkpoint_base}
+          libraries:
+            - whl: ${var.wheel_path}
+
+    cet_v7_standing_replay:
+      name: 0xDSI CET v7 Standing Replay
+      tasks:
+        - task_key: standing_replay
+          spark_python_task:
+            python_file: ../jobs/standing_runtime_replay_prod.py
+            parameters: ["--catalog", "${var.catalog}", "--schema", "${var.schema}"]
+          libraries:
+            - whl: ${var.wheel_path}

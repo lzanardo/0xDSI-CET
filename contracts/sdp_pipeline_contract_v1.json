@@ -1,0 +1,25 @@
+{
+  "version": "v1",
+  "description": "Spark Declarative Pipelines contract for 0xDSI-CET ingestion.",
+  "required_source_columns": [
+    "event_id",
+    "partition_key",
+    "event_type",
+    "event_time_ms",
+    "event_time"
+  ],
+  "datasets": {
+    "bronze_events": "cet_sdp_bronze_events",
+    "silver_events": "cet_sdp_silver_events",
+    "event_buffer": "cet_sdp_event_buffer",
+    "event_quality_metrics": "cet_sdp_event_quality_metrics",
+    "query_registry": "cet_sdp_query_registry"
+  },
+  "expectations": [
+    "event_id_present",
+    "event_type_present",
+    "event_time_present",
+    "partition_key_present",
+    "event_time_ms_present"
+  ]
+}

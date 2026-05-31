@@ -1,0 +1,22 @@
+{
+  "version": "v1",
+  "description": "Standing Trend Runtime configuration for 0xDSI-CET v7",
+  "fields": {
+    "max_window_events_per_partition": "integer",
+    "max_matches_per_query_partition": "integer",
+    "emit_cancellations": "boolean",
+    "relation_aware": "boolean",
+    "include_evidence_graph": "boolean",
+    "default_max_gap_ms": "integer|null",
+    "sinks": "array"
+  },
+  "defaults": {
+    "max_window_events_per_partition": 20000,
+    "max_matches_per_query_partition": 10000,
+    "emit_cancellations": true,
+    "relation_aware": true,
+    "include_evidence_graph": true,
+    "default_max_gap_ms": 86400000,
+    "sinks": ["delta"]
+  }
+}
