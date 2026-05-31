@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oxdsi-cet"
+version = "0.4.0"
+description = "0xDSI Complete Event Trend runtime: native C bridge, DSL, security graph builder, and Databricks production orchestration."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "0xDSI"}]
+license = {text = "Proprietary or repository license"}
+dependencies = []
+
+[project.optional-dependencies]
+databricks = ["pyspark>=3.5"]
+yaml = ["PyYAML>=6"]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bindings*", "jobs*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -1,0 +1,17 @@
+{
+  "version": "v1",
+  "trend_features": [
+    "event_count",
+    "trend_start_time_ms",
+    "trend_end_time_ms",
+    "duration_ms",
+    "event_types",
+    "distinct_event_types",
+    "entities"
+  ],
+  "risk_fields": [
+    "risk_score",
+    "severity",
+    "risk_explanation"
+  ]
+}

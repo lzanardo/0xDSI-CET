@@ -1,0 +1,17 @@
+alerts:
+  - name: cet_v4_path_truncation
+    expr: cet_v4_path_truncation_total > 0
+    for: 1m
+    severity: page
+  - name: cet_v4_dead_letter_ratio_breach
+    expr: cet_v4_dead_letter_ratio > 0.005
+    for: 5m
+    severity: page
+  - name: cet_v4_state_growth
+    expr: cet_v4_state_rows_active > 10000000
+    for: 15m
+    severity: ticket
+  - name: cet_v4_replay_stale_spike
+    expr: cet_v4_replay_diff_stale_total > 10000
+    for: 15m
+    severity: ticket

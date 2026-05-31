@@ -1,0 +1,28 @@
+bundle:
+  name: oxdsi-cet-v4
+
+variables:
+  catalog:
+    default: main
+  schema:
+    default: cet
+  checkpoint_base:
+    default: dbfs:/checkpoints/0xdsi-cet
+  source_table:
+    default: cet_events
+  wheel_path:
+    default: dist/oxdsi_cet-0.4.0-py3-none-any.whl
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      root_path: ~/.bundle/${bundle.name}/${bundle.target}
+  prod:
+    mode: production
+    workspace:
+      root_path: /Shared/.bundle/${bundle.name}/${bundle.target}

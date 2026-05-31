@@ -1,0 +1,31 @@
+{
+  "version": "v1",
+  "vertices": [
+    "event_id",
+    "partition_key",
+    "event_type",
+    "event_time_ms",
+    "attributes"
+  ],
+  "edge_relations": [
+    "temporal_next",
+    "same_user",
+    "same_host",
+    "same_session",
+    "same_source_ip",
+    "same_cloud_account",
+    "same_process",
+    "same_asset",
+    "parent_process"
+  ],
+  "native_edge_fields": [
+    "src",
+    "dst",
+    "window_start_ms",
+    "window_end_ms"
+  ],
+  "metadata_fields": [
+    "relation",
+    "evidence"
+  ]
+}

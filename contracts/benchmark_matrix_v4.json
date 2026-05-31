@@ -1,0 +1,39 @@
+{
+  "version": "v4",
+  "workloads": [
+    {
+      "name": "small_unit",
+      "events": 10000,
+      "queries": 2
+    },
+    {
+      "name": "medium_cluster",
+      "events": 1000000,
+      "queries": 10
+    },
+    {
+      "name": "large_cluster",
+      "events": 10000000,
+      "queries": 25
+    },
+    {
+      "name": "replay_storm",
+      "events": 5000000,
+      "late_event_ratio": 0.1
+    }
+  ],
+  "dimensions": [
+    "latency",
+    "throughput",
+    "memory",
+    "state_size",
+    "replay_correctness",
+    "partition_skew",
+    "path_truncation"
+  ],
+  "acceptance": {
+    "requires_real_databricks_cluster": true,
+    "no_silent_truncation": true,
+    "deterministic_replay": true
+  }
+}

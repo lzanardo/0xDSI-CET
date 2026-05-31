@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 option(CET_ENABLE_PTHREADS "Enable optional native pthread parallel H-CET runtime" ON)
 option(CET_ENABLE_MMAP_ARENA "Enable optional mmap-backed CET runtime arenas" ON)
 option(CET_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
+option(CET_ENABLE_SANITIZERS "Enable ASAN/UBSAN sanitizer flags for native tests" OFF)
 
 set(CET_SOURCES
   c_engine/src/dsl.c
@@ -50,8 +51,20 @@ else()
   endforeach()
 endif()
 
+
+if(CET_ENABLE_SANITIZERS AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  foreach(tgt oxdsi_cet_static oxdsi_cet)
+    target_compile_options(${tgt} PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+    target_link_options(${tgt} PRIVATE -fsanitize=address,undefined)
+  endforeach()
+endif()
+
 add_executable(test_cet c_engine/tests/test_main.c)
 target_link_libraries(test_cet PRIVATE oxdsi_cet_static)
+if(CET_ENABLE_SANITIZERS AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(test_cet PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+  target_link_options(test_cet PRIVATE -fsanitize=address,undefined)
+endif()
 
 enable_testing()
 add_test(NAME cet_tests COMMAND test_cet)
