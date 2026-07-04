@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc ec426bb3f12bfbe5eb184312a5b31bc46cbcca55005875e23af0348ac8266f54 # shrinks to g = Graph { vertices: [Vertex { id: 1, partition_key: "p", event_type: "A", event_time_ms: 1 }], edges: [], index: {1: 0}, max_vertices: 64, max_edges: 256 }, q = Query { name: "prop_q", seq: [EventType { name: "A", kleene_plus: false, predicate: None }], within_ms: 0, slide_ms: 0, skip_till_any_match: true }

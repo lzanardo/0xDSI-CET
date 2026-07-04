@@ -1,0 +1,208 @@
+name: rust_cet_core CI
+
+# Validation matrix for the Rust port of the CET engine. Scoped to the
+# rust_cet_core/ subtree so changes elsewhere in the monorepo (Python glue,
+# Databricks jobs, C engine) do not trigger this workflow.
+
+on:
+  pull_request:
+    paths:
+      - "rust_cet_core/**"
+      - "c_engine/**"                       # diff tests link the C engine
+      - ".github/workflows/rust-cet-core-ci.yml"
+  push:
+    branches: [main, feature/**]
+    paths:
+      - "rust_cet_core/**"
+      - "c_engine/**"
+      - ".github/workflows/rust-cet-core-ci.yml"
+  schedule:
+    - cron: "0 3 * * *"                     # nightly high-volume proptest sweep
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"                  # every rustc warning fails CI
+  RUST_BACKTRACE: 1
+
+defaults:
+  run:
+    working-directory: rust_cet_core
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Fast gate: fmt + clippy. Runs first so style/lint failures are visible
+  # before spending CI time on the full build.
+  # ---------------------------------------------------------------------------
+  lint:
+    name: fmt + clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install stable toolchain
+        run: |
+          # rust-toolchain.toml pins the channel and components; running any
+          # rustup command materializes them.
+          rustup show active-toolchain
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_cet_core -> target
+      - name: rustfmt --check
+        run: cargo fmt --check
+      - name: clippy (deny warnings)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+  # ---------------------------------------------------------------------------
+  # Full validation matrix: debug + release test runs, doc build, doc tests.
+  # ---------------------------------------------------------------------------
+  test:
+    name: test (${{ matrix.profile }})
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [debug, release]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install stable toolchain
+        run: rustup show active-toolchain
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_cet_core -> target
+          key: ${{ matrix.profile }}
+      - name: build (${{ matrix.profile }})
+        run: |
+          if [ "${{ matrix.profile }}" = "release" ]; then
+            cargo build --workspace --all-targets --release
+          else
+            cargo build --workspace --all-targets
+          fi
+      - name: test (${{ matrix.profile }})
+        run: |
+          if [ "${{ matrix.profile }}" = "release" ]; then
+            cargo test --workspace --all-targets --release
+          else
+            cargo test --workspace --all-targets
+          fi
+      - name: doc-tests
+        run: cargo test --workspace --doc
+        if: matrix.profile == 'debug'
+      - name: cargo doc (no-deps, warnings deny)
+        run: RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps
+        if: matrix.profile == 'debug'
+
+  # ---------------------------------------------------------------------------
+  # High-volume property sweep. On PRs this runs at PROPTEST_CASES=256 (fast).
+  # The scheduled nightly run bumps it to 2000 for the strongest acceptance bar,
+  # including the C-vs-Rust diff property tests.
+  # ---------------------------------------------------------------------------
+  proptest:
+    name: proptest sweep (${{ github.event_name == 'schedule' && '2000' || '256' }} cases)
+    runs-on: ubuntu-latest
+    needs: test
+    env:
+      PROPTEST_CASES: ${{ github.event_name == 'schedule' && '2000' || '256' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install stable toolchain
+        run: rustup show active-toolchain
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_cet_core -> target
+          key: proptest
+      - name: Rust-only property tests (release)
+        run: cargo test --workspace --tests --release -- property_
+      - name: C-vs-Rust diff property tests (release)
+        run: cargo test -p cet-ffi --test diff_c_engine_property --release
+
+  # ---------------------------------------------------------------------------
+  # Nightly-only: undefined-behavior detection via miri, memory safety via
+  # AddressSanitizer, data-race detection via ThreadSanitizer, and DSL fuzzing.
+  #
+  # These jobs use the nightly toolchain and take substantially longer than the
+  # rest of the matrix, so they only run on the scheduled nightly build. The
+  # `if:` gate is checked at the job level so PRs still see clean status.
+  # ---------------------------------------------------------------------------
+  miri:
+    name: miri (nightly)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nightly + miri
+        run: rustup toolchain install nightly --profile minimal -c miri -c rust-src
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_cet_core -> target
+          key: miri
+      - name: miri setup
+        run: cargo +nightly miri setup
+      - name: miri test (cet-core, cet-dsl, cet-parallel, cet-ffi)
+        # Skip the rayon-driven parallel tests (guarded by `#[cfg_attr(miri, ignore)]`)
+        # and doc-tests, which miri does not fully support. `-Zmiri-disable-isolation`
+        # is required for tests that read env vars or the clock.
+        env:
+          MIRIFLAGS: "-Zmiri-disable-isolation"
+        run: |
+          cargo +nightly miri test -p cet-core --lib
+          cargo +nightly miri test -p cet-dsl
+          cargo +nightly miri test -p cet-parallel --lib
+          cargo +nightly miri test -p cet-ffi --lib
+
+  sanitizers:
+    name: sanitizers (${{ matrix.san }})
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        san: [address, thread]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nightly + rust-src
+        run: rustup toolchain install nightly --profile minimal -c rust-src
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_cet_core -> target
+          key: san-${{ matrix.san }}
+      - name: sanitizer=${{ matrix.san }} (cet-core + cet-ffi)
+        # ThreadSanitizer cannot build doctests because rayon dependencies get
+        # a mixed ABI in that phase; --lib --tests skips them cleanly.
+        env:
+          RUSTFLAGS: "-Zsanitizer=${{ matrix.san }}"
+        run: |
+          cargo +nightly test -p cet-core --lib --tests \
+            --target x86_64-unknown-linux-gnu -Zbuild-std
+          cargo +nightly test -p cet-ffi --lib --tests \
+            --target x86_64-unknown-linux-gnu -Zbuild-std
+          if [ "${{ matrix.san }}" = "thread" ]; then
+            cargo +nightly test -p cet-parallel --lib --tests \
+              --target x86_64-unknown-linux-gnu -Zbuild-std
+          fi
+
+  fuzz-smoke:
+    name: fuzz smoke (DSL parser)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nightly
+        run: rustup toolchain install nightly --profile minimal
+      - name: Cargo cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust_cet_core -> target
+          key: fuzz
+      - name: Install cargo-fuzz
+        run: cargo +nightly install --force cargo-fuzz --locked
+      - name: DSL fuzz (5 minutes)
+        working-directory: rust_cet_core/fuzz
+        run: cargo +nightly fuzz run dsl -- -max_total_time=300 -print_final_stats=1

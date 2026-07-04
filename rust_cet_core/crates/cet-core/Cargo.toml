@@ -1,0 +1,31 @@
+[package]
+name = "cet-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Complex Event Temporal (CET) pattern-match engine — core types and execution algorithms."
+
+[dependencies]
+thiserror.workspace = true
+smallvec.workspace = true
+ahash.workspace = true
+proptest = { workspace = true, optional = true }
+
+[features]
+default = []
+# Enables the `testkit` module with proptest generators. Enabled automatically
+# for downstream integration tests via [dev-dependencies].
+testkit = ["dep:proptest"]
+
+[dev-dependencies]
+cet-core = { path = ".", features = ["testkit"] }
+proptest.workspace = true
+insta.workspace = true
+rstest.workspace = true
+pretty_assertions.workspace = true
+
+[lints]
+workspace = true

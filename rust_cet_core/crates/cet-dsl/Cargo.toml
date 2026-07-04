@@ -1,0 +1,22 @@
+[package]
+name = "cet-dsl"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "CSV pattern-string parser for CET queries."
+
+[dependencies]
+cet-core.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+insta.workspace = true
+rstest.workspace = true
+pretty_assertions.workspace = true
+
+[lints]
+workspace = true
