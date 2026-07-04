@@ -1,0 +1,64 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/cet-core",
+    "crates/cet-dsl",
+    "crates/cet-parallel",
+    "crates/cet-ffi",
+    "benches",
+]
+exclude = ["fuzz"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "Apache-2.0"
+repository = "https://github.com/0xDSI/CET"
+authors = ["0xDSI CET Team"]
+
+[workspace.dependencies]
+# Internal crates
+cet-core = { path = "crates/cet-core", version = "0.1.0" }
+cet-dsl = { path = "crates/cet-dsl", version = "0.1.0" }
+cet-parallel = { path = "crates/cet-parallel", version = "0.1.0" }
+
+# Runtime deps
+thiserror = "1"
+rayon = "1.10"
+smallvec = "1.13"
+ahash = "0.8"
+
+# Test deps
+proptest = "1.5"
+insta = { version = "1.40", features = ["yaml"] }
+rstest = "0.23"
+pretty_assertions = "1.4"
+
+# Bench deps
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+opt-level = 3
+debug = 1
+
+[profile.bench]
+lto = "thin"
+codegen-units = 1
+
+[workspace.lints.rust]
+missing_docs = "warn"
+unsafe_op_in_unsafe_fn = "deny"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+# We enforce the default clippy group (all + correctness + suspicious + style
+# + complexity + perf) at warn. Pedantic and nursery are left at their default
+# `allow` — they surface a lot of cosmetic diffs that don't correspond to
+# actual defects. Individual pedantic lints can be re-enabled per crate.
+all = { level = "warn", priority = -1 }
+# Redundant with the default group but kept explicit for the code review trail.
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"

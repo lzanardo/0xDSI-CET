@@ -1,0 +1,10 @@
+/target
+/fuzz/target
+/fuzz/corpus
+/fuzz/artifacts
+**/*.rs.bk
+Cargo.lock.bak
+# Emacs autosave / lockfiles
+\#*\#
+.\#*
+*~
