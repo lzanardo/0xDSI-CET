@@ -1,0 +1,29 @@
+[package]
+name = "cet-ffi"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "C-ABI shim exposing cet-core with opaque handles."
+build = "build.rs"
+
+[lib]
+name = "oxdsi_cet"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+cet-core.workspace = true
+cet-dsl.workspace = true
+cet-parallel.workspace = true
+
+[build-dependencies]
+cc = "1.2"
+
+[dev-dependencies]
+cet-core = { path = "../cet-core", features = ["testkit"] }
+proptest.workspace = true
+
+[lints]
+workspace = true

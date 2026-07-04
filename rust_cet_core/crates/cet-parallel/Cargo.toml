@@ -1,0 +1,22 @@
+[package]
+name = "cet-parallel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Rayon-based parallel driver for the CET HCET executor."
+
+[dependencies]
+cet-core.workspace = true
+rayon.workspace = true
+
+[dev-dependencies]
+cet-core = { path = "../cet-core", features = ["testkit"] }
+proptest.workspace = true
+insta.workspace = true
+rstest.workspace = true
+
+[lints]
+workspace = true
