@@ -186,7 +186,7 @@ extern "C" {
 // Rust FFI ABI (used through the cet-ffi shim directly, without libloading)
 // ---------------------------------------------------------------------------
 
-use cet_ffi::{
+use oxdsi_cet::{
     cet_ffi_execute_hcet, cet_ffi_execute_mcet, cet_ffi_execute_tcet, cet_ffi_graph_add_edge,
     cet_ffi_graph_add_vertex, cet_ffi_graph_free, cet_ffi_graph_new, cet_ffi_query_free,
     cet_ffi_query_parse, cet_ffi_result_copy_path, cet_ffi_result_free, cet_ffi_result_new,

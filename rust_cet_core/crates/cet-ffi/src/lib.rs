@@ -3,6 +3,17 @@
 //! C-ABI shim over `cet-core`. Exposes an **opaque handle** API so C callers
 //! can drive the Rust engine without depending on Rust struct layouts.
 //!
+//! ## Two API surfaces
+//!
+//! - **Opaque handles** (this module): symbols prefixed `cet_ffi_`. Safer,
+//!   uses `Box`-based ownership, no fixed-size C structs. Preferred for new
+//!   code.
+//! - **C-engine drop-in** ([`compat`]): symbols matching the C engine's
+//!   `cet_*` names byte-for-byte, using `#[repr(C)]` structs identical to
+//!   `c_engine/include/cet.h`. Meant to let existing consumers such as
+//!   `bindings/python/bridge.py` load `libcet_ffi.dylib` without any Python
+//!   changes.
+//!
 //! ## Handle lifecycle
 //!
 //! Every `_new` function returns a non-null `*mut Handle` on success, or
@@ -23,11 +34,14 @@
 //!
 //! ## Symbol naming
 //!
-//! All symbols are prefixed `cet_ffi_` to avoid conflicts with the C
-//! reference implementation (`libc_engine`). Downstream Python/Java bindings
-//! can `#define` shim the old names when they cut over.
+//! All opaque-handle symbols are prefixed `cet_ffi_` to avoid conflicts with
+//! the C reference implementation. The [`compat`] module additionally
+//! exports the un-prefixed `cet_*` symbols so downstream Python/Java
+//! bindings can load `libcet_ffi.dylib` as a drop-in replacement.
 
 #![warn(missing_docs)]
+
+pub mod compat;
 
 use std::ffi::{c_char, c_int, CStr};
 use std::ptr;

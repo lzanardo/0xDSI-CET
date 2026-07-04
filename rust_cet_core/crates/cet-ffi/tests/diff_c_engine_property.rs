@@ -25,7 +25,7 @@ use std::ptr::{self, NonNull};
 use cet_core::{testkit, Graph, Query};
 use proptest::prelude::*;
 
-use cet_ffi::{
+use oxdsi_cet::{
     cet_ffi_execute_hcet, cet_ffi_execute_mcet, cet_ffi_execute_tcet, cet_ffi_graph_add_edge,
     cet_ffi_graph_add_vertex, cet_ffi_graph_free, cet_ffi_graph_new, cet_ffi_query_free,
     cet_ffi_query_new, cet_ffi_query_push_step, cet_ffi_query_set_skip_till_any_match,
